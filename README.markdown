@@ -34,7 +34,7 @@ Build
 
 Prerequisite:
 
- * Unix: MATLAB, OpenCV (>=2.4.0), g++, make, pkg-config
+ * Unix: MATLAB or Octave, OpenCV, g++, make, pkg-config
  * Windows: MATLAB, OpenCV (>=2.4.0), supported compiler
 
 For OpenCV older than v2.4.0, check out the corresponding v2.x branch.
