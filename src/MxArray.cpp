@@ -502,7 +502,7 @@ mwIndex MxArray::subs(mwIndex i, mwIndex j) const
 
 mwIndex MxArray::subs(const std::vector<mwIndex>& si) const
 {
-    return mxCalcSingleSubscript(p_, si.size(), &si[0]);
+    return mxCalcSingleSubscript(p_, si.size(), (mwIndex*)&si[0]);
 }
 
 MxArray MxArray::at(const std::string& fieldName, mwIndex index) const
