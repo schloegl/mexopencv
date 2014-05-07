@@ -1,20 +1,32 @@
 MATLABDIR   ?= /usr/local/matlab
-MEX         ?= $(MATLABDIR)/bin/mex
+### for building with octave, make sure MATLABDIR does not point to a valid directory
+MEXEXT      ?= $(shell $(MATLABDIR)/bin/mexext)
 MV          ?= mv
 AR          ?= ar
 RM          ?= rm
 DOXYGEN     ?= doxygen
-MEXEXT      ?= $(shell $(MATLABDIR)/bin/mexext)
-MATLAB      ?= $(MATLABDIR)/bin/matlab
 TARGETDIR   := +cv
 INCLUDEDIR  := include
 LIBDIR      := lib
 SRCDIR	    := src
 MEXDIR	    := $(SRCDIR)/$(TARGETDIR)
 SRCS        := $(wildcard $(MEXDIR)/*.cpp) $(wildcard $(MEXDIR)/private/*.cpp)
+
+ifeq (,$(MEXEXT))
+  MEX         ?= mkoctfile --mex
+  MATLAB      ?= octave --norc --eval
+  MEXEXT      := mex
+  MKOUTARG    := -o
+  C_FLAGS     := -I$(INCLUDEDIR) $(shell pkg-config --cflags opencv)
+  LD_FLAGS    := -Wl,-lMxArray -Wl,-L$(LIBDIR) -Wl,$(shell pkg-config --libs opencv)
+else
+  MEX         ?= $(MATLABDIR)/bin/mex
+  MATLAB      ?= $(MATLABDIR)/bin/matlab  -nodisplay -r
+  MKOUTARG    := -output
+  C_FLAGS     := -cxx -largeArrayDims -I$(INCLUDEDIR) $(shell pkg-config --cflags opencv)
+  LD_FLAGS    := -lMxArray -L$(LIBDIR) $(shell pkg-config --libs opencv)
+endif
 TARGETS     := $(subst $(MEXDIR), $(TARGETDIR), $(SRCS:.cpp=.$(MEXEXT)))
-C_FLAGS     := -cxx -largeArrayDims -I$(INCLUDEDIR) $(shell pkg-config --cflags opencv)
-LD_FLAGS    := -L$(LIBDIR) $(shell pkg-config --libs opencv)
 
 VPATH       = $(TARGETDIR):$(SRCDIR):$(MEXDIR):$(TARGETDIR)/private:$(SRCDIR)/private
 
@@ -23,18 +35,18 @@ VPATH       = $(TARGETDIR):$(SRCDIR):$(MEXDIR):$(TARGETDIR)/private:$(SRCDIR)/pr
 all: $(TARGETS)
 
 $(LIBDIR)/libMxArray.a: $(SRCDIR)/MxArray.cpp $(INCLUDEDIR)/MxArray.hpp
-	$(MEX) -c $(C_FLAGS) $< -outdir $(LIBDIR)
-	$(AR) -cq $(LIBDIR)/libMxArray.a $(LIBDIR)/*.o
+	$(MEX) -c $(C_FLAGS) $< $(MKOUTARG) $(LIBDIR)/MxArray.o
+	$(AR) -cq $(LIBDIR)/libMxArray.a $(LIBDIR)/MxArray.o
 	$(RM) -f $(LIBDIR)/*.o
 
 %.$(MEXEXT): %.cpp $(LIBDIR)/libMxArray.a $(INCLUDEDIR)/mexopencv.hpp
-	$(MEX) $(C_FLAGS) $< -lMxArray $(LD_FLAGS) -o $@
+	$(MEX) $(C_FLAGS) "$<" $(LD_FLAGS) $(MKOUTARG) "$@"
 
 clean:
-	$(RM) -rf $(LIBDIR)/*.a $(TARGETDIR)/*.$(MEXEXT)
+	$(RM) -rf $(LIBDIR)/*.a $(TARGETDIR)/*.$(MEXEXT) $(TARGETDIR)/private/*.$(MEXEXT)
 
 doc:
 	$(DOXYGEN) Doxyfile
 
 test:
-	$(MATLAB) -nodisplay -r "cd test;try,UnitTest;catch e,disp(e.getReport);end;exit;"
+	$(MATLAB) "addpath(pwd);cd test;try,UnitTest;catch e,disp(e);end;exit;"
