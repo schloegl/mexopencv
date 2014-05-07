@@ -115,6 +115,13 @@ const ConstMap<std::string,int> ColorConv = ConstMap<std::string,int>
     ("BayerGB2GRAY",    cv::COLOR_BayerGB2GRAY)
     ("BayerRG2GRAY",    cv::COLOR_BayerRG2GRAY)
     ("BayerGR2GRAY",    cv::COLOR_BayerGR2GRAY)
+
+#if ( (CV_MAJOR_VERSION << 16) + (CV_MINOR_VERSION << 8) + CV_SUBMINOR_VERSION > 0x020301 )
+    /*
+     *  OpenCV 2.3.1 is the package in Debian/Wheezy 7.5 as of May 2014
+     *  not sure which version is really required in order to support this part
+     */
+
     //YUV 4:2:0 formats family
     ("YUV2RGB_NV12", cv::COLOR_YUV2RGB_NV12)
     ("YUV2BGR_NV12", cv::COLOR_YUV2BGR_NV12)    
@@ -202,7 +209,7 @@ const ConstMap<std::string,int> ColorConv = ConstMap<std::string,int>
     ("YUV2GRAY_YVYU", cv::COLOR_YUV2GRAY_YVYU)
     ("YUV2GRAY_YUYV", cv::COLOR_YUV2GRAY_YUYV)
     ("YUV2GRAY_YUNV", cv::COLOR_YUV2GRAY_YUNV)
-    
+#endif
     ("COLORCVT_MAX",COLOR_COLORCVT_MAX);
 
 /**
