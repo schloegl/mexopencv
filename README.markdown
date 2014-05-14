@@ -1,13 +1,13 @@
 mexopencv
 =========
 
-Collection and a development kit of MATLAB MEX functions for OpenCV library
+Collection and a development kit of Octave/MATLAB MEX functions for OpenCV library
 
-The package provides MATLAB MEX functions that interface a hundred of
+The package provides Octave/MATLAB MEX functions that interface a hundred of
 OpenCV APIs. Also the package contains C++ class that converts between
-MATLAB's native data type and OpenCV data types. The package is suitable for
-fast prototyping of OpenCV application in MATLAB, use of OpenCV as an external
-toolbox in MATLAB, and development of a custom MEX function.
+Octave/MATLAB's native data type and OpenCV data types. The package is suitable for
+fast prototyping of OpenCV application in Octave and MATLAB, use of OpenCV as an external
+toolbox in Octave and MATLAB, and development of a custom MEX function.
 
 Contents
 ========
@@ -28,6 +28,8 @@ The project tree is organized as follows.
     src/+cv/private/ directory for private MEX source files
     test/            directory for test scripts and resources
     utils/           directory for utilities
+    colorspaces/     directory for color transformation wraper functions
+
 
 Build
 =====
