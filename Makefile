@@ -35,7 +35,13 @@ VPATH       = $(TARGETDIR):$(SRCDIR):$(MEXDIR):$(TARGETDIR)/private:$(SRCDIR)/pr
 all: $(TARGETS)
 
 $(LIBDIR)/libMxArray.a: $(SRCDIR)/MxArray.cpp $(INCLUDEDIR)/MxArray.hpp
-	$(MEX) -c $(C_FLAGS) $< $(MKOUTARG) $(LIBDIR)/MxArray.o
+ifneq (mex,$(MEXEXT))
+	## Matlab ##
+	$(MEX) -c $(C_FLAGS) "$<" -outdir $(LIBDIR)
+else
+	## Octave ##
+	$(MEX) -c $(C_FLAGS) "$<" -o $(LIBDIR)/MxArray.o
+endif
 	$(AR) -cq $(LIBDIR)/libMxArray.a $(LIBDIR)/MxArray.o
 	$(RM) -f $(LIBDIR)/*.o
 
