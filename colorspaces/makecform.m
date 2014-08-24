@@ -27,19 +27,14 @@ function out=makecform(varargin)
 
 
 p=fileparts(fileparts(which(mfilename)));
-if exist('cvtColor.mex','file')~=3
+if exist('cvtColor','file')~=3
 	% without '-end' argument some octave core functions 
     % (e.g. imread, imwrite, line, rectangle, resize) might be shadowed.
  	addpath(fullfile(p,'+cv'),'-end');
 end
-if exist('cvtColor.mex','file')~=3
+if exist('cvtColor','file')~=3
 	%% try to compile cvtColor.mex
-	try
-		printf("Trying to compile cvtColor.mex");
-	 	system(["make -C ",p," +cv/cvtColor.mex"]);
-	catch
-	 	error('mexopencv tools are missing or not compiled (try "make +cv/cvtColor.mex")'); 
-	end; 
+	error('mexopencv:cvtColor is missing or not compiled!');
 end
 
 out.argin=varargin; 

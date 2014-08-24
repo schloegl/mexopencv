@@ -28,7 +28,7 @@ elseif nargin==2,
 	cform = varargin{2}; 
 	if isfield(cform,'c_func') && strcmp(cform.c_func,'cvtColor')
 		if exist('cvtColor','file')~=3,
-			error('mexopencv tools are missing or not compiled!'); 
+			error('mexopencv:cvtColor is missing or not compiled!');
 		end
 	end
 
