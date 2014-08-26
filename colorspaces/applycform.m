@@ -3,8 +3,8 @@ function out=applycform(varargin)
 %  that has been defined by MAKECFORM
 % 
 % USAGE:
-%   [cform] = makecform(...)
-%   applycform(img, cform); 
+%   [cform] = makecform (...)
+%   out = applycform (img, cform); 
 %
 % Remark: The format of variable cform is not compatible to the matlab version. 
 %
@@ -27,14 +27,20 @@ elseif nargin==2,
 	img   = varargin{1};
 	cform = varargin{2}; 
 	if isfield(cform,'c_func') && strcmp(cform.c_func,'cvtColor')
-		if exist('cvtColor','file')~=3,
+		if exist('OCTAVE_VERSION','builtin') && (exist('cvtColor','file')==3),
+			%%% Octave
+			fun='cvtColor';
+		elseif ~isempty(which('cv.cvtColor'))
+			%%% Matlab
+			fun='cv.cvtColor';
+		else
 			error('mexopencv:cvtColor is missing or not compiled!');
 		end
 	end
 
 	try
-		out = cvtColor(img,out.cdata.cforms); 
-		return; 
+		out = feval(fun, img, cform.cdata.cforms);
+		return;
 	catch
 		error('color transformation using applycform failed')
 	end; 
@@ -43,4 +49,3 @@ else
 	error('unknown input argument')
 
 end
-	

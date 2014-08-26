@@ -3,8 +3,8 @@ function out=makecform(varargin)
 %  that can be applied in APPLYCFORM
 % 
 % USAGE:
-%   [cform] = makecform(...)
-%   applycform(img, cform); 
+%   [cform] = makecform (...)
+%   out = applycform (img, cform); 
 %
 % Remark: The format of variable cform is not compatible to the matlab version. 
 %
@@ -26,16 +26,29 @@ function out=makecform(varargin)
 % This is part of mexopencv https://github.com/schloegl/mexopencv 
 
 
+
 p=fileparts(fileparts(which(mfilename)));
-if exist('cvtColor','file')~=3
-	% without '-end' argument some octave core functions 
-    % (e.g. imread, imwrite, line, rectangle, resize) might be shadowed.
- 	addpath(fullfile(p,'+cv'),'-end');
-end
-if exist('cvtColor','file')~=3
-	%% try to compile cvtColor.mex
-	error('mexopencv:cvtColor is missing or not compiled!');
-end
+if exist('OCTAVE_VERSION','builtin')
+	%%  Octave
+	if exist('cvtColor','file')~=3
+		% without '-end' argument some octave core functions 
+		    % (e.g. imread, imwrite, line, rectangle, resize) might be shadowed.
+	 	addpath(fullfile(p,'+cv'),'-end');
+	end
+	if exist('cvtColor','file')~=3
+		%% try to compile cvtColor.mex
+		warning('mexopencv:cvtColor is missing or not compiled!');
+	end
+else 
+	%% Matlab
+	if isempty(which('cv.cvtColor'))
+	 	addpath(fullfile(p));
+	end
+	if isempty(which('cv.cvtColor'))
+		%% try to compile cvtColor.mex
+		warning('cv.cvtColor is missing or not compiled!');
+	end
+end; 
 
 out.argin=varargin; 
 
