@@ -65,6 +65,14 @@ if ispc % Windows
         if opts.verbose > 0, disp(cmd); end
         if ~opts.dryrun, delete(cmd); end
 
+        cmd = fullfile(MEXOPENCV_ROOT, '+cv', '*.pdb');
+        if opts.verbose > 0, disp(cmd); end
+        if ~opts.dryrun, delete(cmd); end
+
+        cmd = fullfile(MEXOPENCV_ROOT, '+cv', 'private', '*.pdb');
+        if opts.verbose > 0, disp(cmd); end
+        if ~opts.dryrun, delete(cmd); end
+
         cmd = fullfile(MEXOPENCV_ROOT, 'lib', '*.obj');
         if opts.verbose > 0, disp(cmd); end
         if ~opts.dryrun, delete(cmd); end
@@ -91,6 +99,8 @@ if ispc % Windows
         cv_cflags, cv_libs);
     if opts.verbose > 1
         mex_flags = ['-v ' mex_flags];    % verbose mex output
+    elseif opts.verbose == 0 && ~verLessThan('matlab', '8.3')
+        mex_flags = ['-silent ' mex_flags];  % R2014a
     end
     if opts.debug
         mex_flags = ['-g ' mex_flags];    % debug vs. optimized builds
@@ -172,8 +182,8 @@ end
 %
 function [cflags,libs] = pkg_config(opts)
     %PKG_CONFIG  constructs OpenCV-related option flags for Windows
-    I_path = fullfile(opts.opencv_path,'build','include');
-    L_path = fullfile(opts.opencv_path,'build',arch_str(),compiler_str(),'lib');
+    I_path = fullfile(opts.opencv_path,'include');
+    L_path = fullfile(opts.opencv_path,arch_str(),compiler_str(),'lib');
     l_options = strcat({' -l'}, lib_names(L_path));
     if opts.debug
         l_options = strcat(l_options,'d');    % link against debug binaries
@@ -202,9 +212,11 @@ end
 
 function s = compiler_str()
     %COMPILER_STR  return compiler shortname
-    c = mex.getCompilerConfigurations;
+    c = mex.getCompilerConfigurations('C++','Selected');
     if ~isempty(strfind(c.Name, 'Visual'))
-        if ~isempty(strfind(c.Version, '11.0'))       % vc2012
+        if ~isempty(strfind(c.Version, '12.0'))       % vc2013
+            s = 'vc12';
+        elseif ~isempty(strfind(c.Version, '11.0'))   % vc2012
             s = 'vc11';
         elseif ~isempty(strfind(c.Version, '10.0'))   % vc2010
             s = 'vc10';
@@ -231,10 +243,13 @@ function [comp_flags,link_flags] = compilation_flags(opts)
 
     % override _SECURE_SCL for VS versions prior to VS2010,
     % or when linking against debug OpenCV binaries
-    c = mex.getCompilerConfigurations();
+    c = mex.getCompilerConfigurations('C++','Selected');
     isVS = strcmp(c.Manufacturer,'Microsoft') && ~isempty(strfind(c.Name,'Visual'));
     if isVS && (str2double(c.Version) < 10 || opts.debug)
         comp_flags{end+1} = '/D_SECURE_SCL=1';
+    end
+    if isVS && opts.debug
+        comp_flags{end+1} = '/MDd';   % link against debug CRT
     end
 
     % show all compiler warnings, and verbose output from linker
@@ -276,7 +291,7 @@ function check_path_opencv(opts)
     %CHECK_PATH_OPENCV  check OpenCV bin folder is on the system PATH env. var.
 
     % check system PATH environment variable
-    cv_folder = fullfile(opts.opencv_path,'build',arch_str(),compiler_str(),'bin');
+    cv_folder = fullfile(opts.opencv_path,arch_str(),compiler_str(),'bin');
     p = getenv('PATH');
     C = textscan(p, '%s', 'Delimiter',pathsep());
     if ~any(strcmpi(cv_folder,C{1}))

@@ -94,7 +94,7 @@ MEX         ?= $(MATLABDIR)/bin/mex
 MATLAB      ?= $(MATLABDIR)/bin/matlab -nodisplay -r
 MKOUTARG    := -output
 C_FLAGS     := -cxx -largeArrayDims -I$(INCLUDEDIR) $(shell pkg-config --cflags opencv)
-LD_FLAGS    := -L$(LIBDIR) -lMxArray $(shell pkg-config --libs opencv)
+LD_FLAGS    := -L$(LIBDIR) -lMxArray $(shell pkg-config --libs-only-L --libs-only-l opencv)
 MATLABMEX   := 1
 
 endif
