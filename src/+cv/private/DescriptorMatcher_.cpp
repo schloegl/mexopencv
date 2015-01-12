@@ -6,7 +6,9 @@
  */
 #include <typeinfo>
 #include "mexopencv.hpp"
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) >= 0x020400
 #include "opencv2/nonfree/nonfree.hpp"
+#endif
 using namespace std;
 using namespace cv;
 
@@ -201,6 +203,7 @@ Ptr<DescriptorMatcher> createFlannBasedMatcher(const vector<MxArray>& rhs)
 void mexFunction( int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[] )
 {
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) >= 0x020400
     nargchk(nrhs>=2 && nlhs<=1);
     
     // Determine argument format between constructor or (id,method,...)
@@ -381,5 +384,6 @@ void mexFunction( int nlhs, mxArray *plhs[],
         obj->write(fs);
     }
     else
+#endif
         mexErrMsgIdAndTxt("mexopencv:error","Unrecognized operation");
 }

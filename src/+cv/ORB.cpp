@@ -38,6 +38,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     int n_levels = 8;
     int first_level = 0;
     int WTA_K = 2;
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) >= 0x020400
     int score_type = ORB::HARRIS_SCORE;
     int patch_size = 31;
     Mat mask;
@@ -79,4 +80,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     else
         orb(image, mask, keypoints);
     plhs[0] = MxArray(keypoints);
+#else
+    mexErrMsgIdAndTxt("mexopencv:error","version of libopencv2 is less than 2.4.0");
+#endif
 }

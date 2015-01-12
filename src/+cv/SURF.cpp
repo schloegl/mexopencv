@@ -5,7 +5,9 @@
  * @date 2011
  */
 #include "mexopencv.hpp"
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) >= 0x020400
 #include "opencv2/nonfree/nonfree.hpp"
+#endif
 using namespace std;
 using namespace cv;
 
@@ -27,6 +29,10 @@ bool initialized = false;
 void mexFunction( int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[] )
 {
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) < 0x020400
+    mexErrMsgIdAndTxt("mexopencv:error","SURF not supported by OpenCV v"CV_VERSION);
+    return;
+#else
     // Check the number of arguments
     if (nrhs<1 || ((nrhs%2)!=1) || nlhs>2)
         mexErrMsgIdAndTxt("mexopencv:error","Wrong number of arguments");
@@ -84,4 +90,5 @@ void mexFunction( int nlhs, mxArray *plhs[],
     else
         surf(image, mask, keypoints);
     plhs[0] = MxArray(keypoints);
+#endif
 }

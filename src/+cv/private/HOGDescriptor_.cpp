@@ -120,10 +120,12 @@ void mexFunction( int nlhs, mxArray *plhs[],
         else
             obj.setSVMDetector(rhs[2].toVector<float>());
     }
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) >= 0x020400
     else if (method == "readALTModel") {
         nargchk(nrhs==3 && nlhs==0);
         obj.readALTModel(rhs[2].toString());
     }
+#endif
     else if (method == "load") {
         nargchk(nrhs==3 && nlhs<=1);
         plhs[0] = MxArray(obj.load(rhs[2].toString()));

@@ -92,6 +92,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         obj.getBackgroundImage(im);
         plhs[0] = MxArray(im);
     }
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) >= 0x020400
     else if (method == "history") {
         if (nrhs==3 && nlhs==0)
             obj.set(method, rhs[2].toInt());
@@ -108,6 +109,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
         else
             mexErrMsgIdAndTxt("mexopencv:error","Wrong number of arguments");
     }
+#endif
     else
         mexErrMsgIdAndTxt("mexopencv:error","Unrecognized operation");
 }

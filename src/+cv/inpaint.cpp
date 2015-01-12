@@ -5,7 +5,10 @@
  * @date 2012
  */
 #include "mexopencv.hpp"
+
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) >= 0x020400
 #include "opencv2/photo/photo.hpp"
+#endif
 using namespace std;
 using namespace cv;
 

@@ -233,12 +233,16 @@ void mexFunction( int nlhs, mxArray *plhs[],
         plhs[0] = MxArray(results);
     }
     else if (method == "predict_all") {
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) < 0x020400
+        mexErrMsgIdAndTxt("mexopencv:error","SVM::predict_all not supported by OpenCV v"CV_VERSION );
+#else
         if (nrhs!=3 || nlhs>1)
             mexErrMsgIdAndTxt("mexopencv:error","Wrong number of arguments");
         Mat samples(rhs[2].toMat(CV_32F));
         Mat results;
         obj->predict(samples, results);
         plhs[0] = MxArray(results);
+#endif
     }
     else if (method == "train_auto") {
         if (nrhs<4 || nlhs>1)

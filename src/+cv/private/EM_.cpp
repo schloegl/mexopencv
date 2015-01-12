@@ -13,6 +13,7 @@ using namespace cv;
 
 /// Last object id to allocate
 int last_id = 0;
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) >= 0x020400
 /// Object container
 map<int,EM> obj_;
 
@@ -27,6 +28,7 @@ const ConstMap<int, string> CovMatTypeInv = ConstMap<int, string>
     (EM::COV_MAT_SPHERICAL, "Spherical")
     (EM::COV_MAT_DIAGONAL,  "Diagonal")
     (EM::COV_MAT_GENERIC,   "Generic");
+#endif
 
 // convenience macro to return results
 #define assign_lhs(ll, label, prob)  do { \
@@ -64,6 +66,10 @@ void mexFunction( int nlhs, mxArray *plhs[],
         mexErrMsgIdAndTxt("mexopencv:error","Invalid arguments");
     }
 
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) < 0x020400
+    mexErrMsgIdAndTxt("mexopencv:error","private/EM not supported by OpenCV v"CV_VERSION"");
+    return;
+#else
     // Big operation switch
     if (method == "new") {
         if (nrhs > 3  && (nrhs % 2)==0) {
@@ -233,4 +239,5 @@ void mexFunction( int nlhs, mxArray *plhs[],
         Vec2d result = obj.predict(sample, probs);
         assign_lhs(result[0], result[1], probs);
     }
+#endif
 }

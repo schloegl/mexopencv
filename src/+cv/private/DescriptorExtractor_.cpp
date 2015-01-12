@@ -5,7 +5,9 @@
  * @date 2012
  */
 #include "mexopencv.hpp"
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) >= 0x020400
 #include "opencv2/nonfree/nonfree.hpp"
+#endif
 using namespace std;
 using namespace cv;
 
@@ -26,6 +28,10 @@ map<int,Ptr<DescriptorExtractor> > obj_;
 void mexFunction( int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[] )
 {
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) < 0x020400
+    mexErrMsgIdAndTxt("mexopencv:error","DescriptorExtractor_ not supported by OpenCV v"CV_VERSION"");
+    return;
+#else
     if (nrhs<1 || nlhs>2)
         mexErrMsgIdAndTxt("mexopencv:error","Wrong number of arguments");
 
@@ -91,4 +97,5 @@ void mexFunction( int nlhs, mxArray *plhs[],
     }
     else
         mexErrMsgIdAndTxt("mexopencv:error","Unrecognized operation");
+#endif
 }

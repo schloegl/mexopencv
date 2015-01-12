@@ -6,10 +6,13 @@
  */
 #include <typeinfo>
 #include "mexopencv.hpp"
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) >= 0x020400
 #include "opencv2/nonfree/nonfree.hpp"
+#endif
 using namespace std;
 using namespace cv;
 
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) >= 0x020400
 namespace {
 /** Algorithm parameter types map
  */
@@ -80,6 +83,7 @@ void set_param(cv::Ptr<cv::FeatureDetector> &obj, const std::string &param, MxAr
     }
 }
 }
+#endif
 
 // Persistent objects
 
@@ -101,6 +105,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
     if (nrhs<1 || nlhs>1)
         mexErrMsgIdAndTxt("mexopencv:error","Wrong number of arguments");
 
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) >= 0x020400
     if (last_id==0)
         initModule_nonfree();
     
@@ -207,7 +212,7 @@ void mexFunction( int nlhs, mxArray *plhs[],
             mexErrMsgIdAndTxt("mexopencv:error", "Wrong number of arguments");
         }
     }
-    else {
+    else
+#endif
         mexErrMsgIdAndTxt("mexopencv:error", "Unrecognized operation");
-    }
 }

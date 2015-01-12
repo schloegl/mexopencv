@@ -5,7 +5,9 @@
  * @date 2012
  */
 #include "mexopencv.hpp"
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) >= 0x020400
 #include "opencv2/nonfree/nonfree.hpp"
+#endif
 using namespace std;
 using namespace cv;
 
@@ -33,6 +35,10 @@ inline void nargchk(bool cond)
 void mexFunction( int nlhs, mxArray *plhs[],
                   int nrhs, const mxArray *prhs[] )
 {
+#if ( (CV_MAJOR_VERSION<<16) + (CV_MINOR_VERSION<<8) + CV_SUBMINOR_VERSION ) < 0x020400
+    mexErrMsgIdAndTxt("mexopencv:error","BOWImgDescriptorExtractor_ not supported by OpenCV v"CV_VERSION );
+    return;
+#else
     nargchk(nrhs>=2 && nlhs<=3);
     vector<MxArray> rhs(prhs,prhs+nrhs);
     int id = rhs[0].toInt();
@@ -97,4 +103,5 @@ void mexFunction( int nlhs, mxArray *plhs[],
     }
     else
         mexErrMsgIdAndTxt("mexopencv:error","Unrecognized operation %s", method.c_str());
+#endif
 }
